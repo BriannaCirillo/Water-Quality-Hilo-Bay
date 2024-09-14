@@ -1,0 +1,131 @@
+---
+title: "Yearly Descriptives"
+author: "Brianna Cirillo & Odalys Barrientos"
+output: html_notebook
+---
+# Data starts from HiloModified13-15.csv
+```{r}
+library(mosaic)
+library(ggplot2)
+library(readr)
+
+hilomodified <- read_csv("~/Documents/MA321-SP21/HiloBay-Adolf/HiloBay_MA321_Spring21/NewDataframes/HiloModified13-15.csv")
+```
+
+==============================================================
+# Descriptives by Storm
+We are picking one storm from each year. We can indicate a storm has occurred by the extreme events in the river flow data. 
+We will not use the log (which is logbase10) in order to see the extreme events
+When salinity is below 35 this also indicates a storm has occurred. 
+
+We will break the data set by year to find the most extreme event for each year. 
+```{r}
+hilo2013 <- hilomodified[1:8760,]
+
+hilo2014 <- hilomodified[8761:17520,]
+
+hilo2015 <- hilomodified[17521:length(hilomodified[,1]),]
+# We will save hilo2015 as a csv file for future use
+# write.csv(hilo2015,"/Users/odalysbar/Documents/MA321-SP21/HiloBay-Adolf/HiloBay_MA321_Spring21/NewDataframes/Hilo2015.csv", row.names = FALSE)
+
+```
+
+# 2013 Data & Plot
+```{r}
+# max(as.numeric(hilo2013$logcms)) # this is log base 10 
+# This is NOT the natural log
+max(hilo2013$cms) # 207.186 
+which(hilo2013$cms == max(hilo2013$cms))
+
+hilo2013[3550,]
+# all values for this storm are NA
+
+plot2013 <- ggplot(hilo2013,  aes(x = date, y = cms)) + 
+  geom_line(color="black")+
+  geom_line(aes(y = saltppt), color = "darkred") +
+  geom_line(aes(y = Corr.NTU), color="darkgreen") +
+  geom_line(aes(y=ChlRFU),color="blue")
+
+print(plot2013 + ggtitle("2013")+labs(x="Time", y = "River Flow - cubic meters per second"))
+```
+
+#### Split 2013 into 6 months to get a better visual
+```{r}
+# R2013.1 <- ggplot(hilo2013[1:(length(hilo2013[,1])/2),],  aes(x = date, y = as.numeric(cms))) + 
+#   geom_line(color="black")+
+#   geom_line(aes(y = as.numeric(saltppt)), color = "darkred") +
+#   geom_line(aes(y = as.numeric(Corr.NTU)), color="darkgreen") +
+#   geom_line(aes(y=as.numeric(ChlRFU)),color="blue")
+# print(R2013.1 + ggtitle("River Flow")+labs(x="Time", y = "River Flow - cubic meters per second"))
+# R2013.1+ylim(0,40)
+# 
+# 
+# R2013.2 <- ggplot(hilo2013[(length(hilo2013[,1])/2):length(hilo2013[,1]),],  aes(x = date, y = as.numeric(cms))) + 
+#   geom_line(color="black")+
+#   geom_line(aes(y = as.numeric(saltppt)), color = "darkred") +
+#   geom_line(aes(y = as.numeric(Corr.NTU)), color="darkgreen") +
+#   geom_line(aes(y=as.numeric(ChlRFU)),color="blue")
+# print(R2013.2 + ggtitle("River Flow")+labs(x="Time", y = "River Flow - cubic meters per second"))
+# R2013.2+ylim(0,40)
+```
+
+# 2014 Data & Plot
+```{r}
+# Max river flow in the overall data set
+max(hilo2014$cms)
+max(hilomodified$cms)
+
+which(hilo2014$cms == max(hilo2014$cms))
+
+hilo2014[5263,]
+
+R2014 <- ggplot(hilo2014,  aes(x = date, y = cms)) + 
+  geom_line(color="black")+
+  geom_line(aes(y = saltppt), color = "darkred") +
+  geom_line(aes(y = Corr.NTU), color="darkgreen") +
+  geom_line(aes(y=ChlRFU),color="blue")
+
+print(R2014 + ggtitle("2014")+labs(x="Time", y = "River Flow - cubic meters per second"))
+```
+
+
+# 2015 Data & Plot
+```{r}
+max(hilo2015$cms)
+
+which(hilo2015$cms == max(hilo2015$cms))
+
+hilo2015[6475,]
+
+R2015 <- ggplot(hilo2015,  aes(x = date, y = cms)) + 
+  geom_line(color="black")+
+  geom_line(aes(y = saltppt), color = "darkred") +
+  geom_line(aes(y = Corr.NTU), color="darkgreen") +
+  geom_line(aes(y=ChlRFU),color="blue")
+
+print(R2015 + ggtitle("2015")+labs(x="Time", y = "River Flow - cubic meters per second"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

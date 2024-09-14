@@ -1,0 +1,525 @@
+---
+title: "Data Cleaning & Descriptives"
+author: "Brianna Cirillo & Odalys Barrientos"
+output: html_notebook
+---
+# Libraries
+```{r}
+library(mosaic)
+library(ggplot2)
+library(readr)
+```
+
+# Matching the bouy data to the other data collected 
+```{r}
+getwd()
+# hilo <- read_csv("~/Documents/MA321-SP21/HiloBay-Adolf/HiloBay_MA321_Spring21/NewDataframes/HiloData.csv")
+# 
+# head(hilo) # start date 2010-10-23 00:00:00	
+# tail(hilo) # end date 2016-12-31 23:00:00	
+```
+# Removing columns we will not use in this project
+```{r}
+# hilo$date.2 <- NULL # another date column
+# hilo$date.1 <- NULL # another date column
+# hilo$BGARFU <- NULL # ?
+# hilo$cfs <- NULL
+# hilo$DOmgL <- NULL # dissolved oxygen
+# hilo$PAR1 <- NULL # ?
+# hilo$pH <- NULL # pH
+# hilo$NTU <- NULL # a different measurement for turbitity
+# hilo$DOper10 <- NULL # dissolved oxygen
+# hilo$logcms <- NULL # dissolved oxygen
+# hilo$chlcal <- NULL
+
+# Columns we will use
+# for some reason they were saved as characters
+# hilo$cms <- as.numeric(hilo$cms)
+# hilo$ChlRFU <- as.numeric(hilo$ChlRFU)
+# hilo$saltppt <- as.numeric(hilo$saltppt)
+# hilo$TempC <- as.numeric(hilo$TempC)
+# hilo$Corr.NTU <- as.numeric(hilo$Corr.NTU)
+# hilo$Doper <- as.numeric(hilo$Doper)
+
+# saving this dataframe as a csv
+#write.csv(hilo,"/Users/odalysbar/Documents/MA321-SP21/HiloBay-Adolf/HiloBay_MA321_Spring21/NewDataframes/HiloFull-6var.csv", row.names = FALSE)
+
+# This is the dataframe we will be using 
+hilo <- read_csv("~/Documents/MA321-SP21/HiloBay-Adolf/HiloBay_MA321_Spring21/NewDataframes/HiloFull-6var.csv")
+hilo$cms <- as.numeric(hilo$cms)
+head(hilo) # start date 2010-10-23 00:00:00	
+tail(hilo) # end date 2016-12-31 23:00:00	
+```
+
+====================================================
+# FULL DATA SET 2010 (Oct 23) - 2016
+# Descriptives: PLots
+
+## River Flow FULL DATA SET
+```{r}
+length(hilo$cms[which(is.na(hilo$cms)==TRUE)]) # 12 NAs 
+which(is.na(hilo$cms)==TRUE) # the location of the NAs
+
+RiverFlow <- ggplot(hilo,  aes(x = date, y = cms)) + 
+  geom_line()
+
+print(RiverFlow + ggtitle("River Flow")+labs(x="Time", y = "River Flow - cubic meters per second"))
+
+
+favstats(hilo$cms)
+```
+## CHL FULL DATA SET
+```{r}
+length(hilo$ChlRFU[which(is.na(hilo$ChlRFU)==TRUE)]) # 20464 NAs
+
+
+CHL <- ggplot(hilo,  aes(x = date, y = ChlRFU)) + 
+  geom_line()
+
+print(CHL + ggtitle("Chlorophyll ")+labs(x="Time", y = "Chlorophyll  - relative fluorescence units (RFU)"))
+
+favstats(hilo$ChlRFU)
+```
+## Turbity FULL DATA SET
+```{r}
+length(hilo$Corr.NTU[which(is.na(hilo$Corr.NTU)==TRUE)]) #15012 NAs
+
+TURB <- ggplot(hilo,aes(x = date, y = Corr.NTU)) + 
+  geom_line()
+
+print(TURB + ggtitle("Turbidity ")+labs(x="Time", y = "Turbidity - Nephelometric Turbidity Units (NTU)"))
+
+favstats(hilo$Corr.NTU)
+```
+## Salinity FULL DATA SET
+```{r}
+length(hilo$saltppt[which(is.na(hilo$saltppt)==TRUE)]) #11330 NAs
+
+SALT <- ggplot(hilo,  aes(x = date, y = saltppt)) + 
+  geom_line()
+
+print(SALT + ggtitle("Salinity")+labs(x="Time", y = "Salinity - unit parts per thousand (PPT)"))
+
+favstats(hilo$saltppt)
+```
+## Tempurature FULL DATA SET
+```{r}
+length(hilo$TempC[which(is.na(hilo$TempC)==TRUE)]) # 10410 NAs
+
+TEMP <- ggplot(hilo,  aes(x = date, y = TempC)) + 
+  geom_line()
+
+print(TEMP + ggtitle("Temperature")+labs(x="Time", y = "Temperature - Celsius"))
+
+favstats(hilo$TempC)
+```
+# Dissolved Oxygen FULL DATA SET
+```{r}
+length(hilo$Doper[which(is.na(hilo$Doper)==TRUE)]) # 2267 NAs
+
+DISSO <- ggplot(hilo,  aes(x = date, y = Doper)) + 
+  geom_line()
+
+print(DISSO + ggtitle("Dissolved Oxygen")+labs(x="Time", y = "Dissolved Oxygen in percent of saturation"))
+
+favstats(hilo$Doper)
+```
+
+========================================================
+# Histograms FULL DATA SET
+## River Flow Histogram
+```{r}
+hist(hilo$cms, main = "Histogram of River Flow", xlab = "River Flow", breaks = 1000, ylim= c(0,400))
+# VERYY SKEWED
+
+# this looks better
+hist(log(hilo$cms), main = "Histogram of Log River Flow", xlab = "Log River Flow")
+```
+## CHL Histogram
+```{r}
+# VERY skewed
+hist(hilo$ChlRFU, main = "Histogram of Chlorophyll", xlab = "Chlorophyll  - relative fluorescence units (RFU)")
+
+# this looks better
+hist(log(hilo$ChlRFU), main = "Histogram of Log Chlorophyll", xlab = "Chlorophyll")
+
+```
+
+## Turbity Histogram
+```{r}
+# VERY skewed
+hist(hilo$Corr.NTU, main = "Histogram of Turbidity", xlab = "Turbidity - Nephelometric Turbidity Units (NTU)")
+
+# this looks better
+hist(log(hilo$Corr.NTU), main = "Histogram of Log Turbidity", xlab = "Turbidity")
+
+```
+## Salinity Histogram
+```{r}
+# skewed
+hist(hilo$saltppt, main = "Histogram of Salinity", xlab = "Salinity - unit parts per thousand (PPT)")
+
+# this is worst!
+hist(log(hilo$saltppt), main = "Histogram of Log Salinity", xlab = "Salinity")
+
+```
+## Temp Histogram
+```{r}
+# looks good
+hist(hilo$TempC, main = "Histogram of Temperature", xlab = "Temperature - Celsius")
+```
+
+## Dissolved Oxygen Histogram
+```{r}
+# looks good 
+hist(hilo$Doper, main = "Histogram of Dissolved Oxygen", xlab = "Dissolved Oxygen in percent of saturation")
+
+```
+
+=========================================================
+# NEW DATA SET-Modified Data 2013-2015
+```{r}
+ 
+hilomodified <- read_csv("~/Documents/MA321-SP21/HiloBay-Adolf/HiloBay_MA321_Spring21/NewDataframes/HiloModified13-15.csv")
+
+# start date: 2013-01-01 00:00:00
+# end date: 2015-12-31 23:00:00
+
+head(hilomodified)
+tail(hilomodified)
+
+```
+
+# Descriptives on all variables MODIFIED DATA SET
+## River Flow MODIFIED
+```{r}
+length(hilomodified$logcms[which(is.na(hilomodified$logcms)==TRUE)]) # No NAs, YAY!
+
+
+RiverFlowMod <- ggplot(hilomodified,  aes(x = date, y = cms)) + 
+  geom_line()
+
+print(RiverFlowMod + ggtitle("River Flow")+labs(x="Time", y = "River Flow - cubic meters per second"))
+
+favstats(hilomodified$cms)
+```
+## CHL MODIFIED
+```{r}
+sum(is.na(hilomodified$ChlRFU)==TRUE) # 1884 NAs
+
+CHLMod <- ggplot(hilomodified,  aes(x = date, y = ChlRFU)) + 
+  geom_line()
+
+print(CHLMod + ggtitle("Chlorophyll ")+labs(x="Time", y = "Chlorophyll  - relative fluorescence units (RFU)"))
+
+favstats(hilomodified$ChlRFU)
+```
+## Turbitity MODIFIED
+```{r}
+length(hilomodified$Corr.NTU[which(is.na(hilomodified$Corr.NTU)==TRUE)]) # 2704 NAs
+
+TURBMod <- ggplot(hilomodified,  aes(x = date, y = Corr.NTU)) + 
+  geom_line()
+
+print(TURBMod + ggtitle("Turbidity ")+labs(x="Time", y = "Turbidity - Nephelometric Turbidity Units (NTU)"))
+
+favstats(hilomodified$Corr.NTU)
+```
+## Salinity MODIFIED
+```{r}
+length(hilomodified$saltppt[which(is.na(hilomodified$saltppt)==TRUE)]) # 2267 NAs
+
+SALTMod <- ggplot(hilomodified,  aes(x = date, y = saltppt)) + 
+  geom_line()
+
+print(SALTMod + ggtitle("Salinity")+labs(x="Time", y = "Salinity - unit parts per thousand (PPT)"))
+
+favstats(hilomodified$saltppt)
+favstats(hilomodified$TempC)
+favstats(hilomodified$Doper)
+```
+## Temperature MODIFIED
+```{r}
+length(hilomodified$TempC[which(is.na(hilomodified$TempC)==TRUE)]) # 1702 NAs
+
+TempMod <- ggplot(hilomodified,  aes(x = date, y = TempC)) + 
+  geom_line()
+
+print(TempMod + ggtitle("Temperature")+labs(x="Time", y = "Temperature - C"))
+
+
+favstats(hilomodified$TempC)
+```
+
+## Dissolved Oxygen MODIFIED
+```{r}
+length(hilomodified$Doper[which(is.na(hilomodified$Doper)==TRUE)]) # 2267 NAs
+
+DissoMod <- ggplot(hilomodified,  aes(x = date, y = Doper)) + 
+  geom_line()
+
+print(DissoMod + ggtitle("Dissolved Oxygen")+labs(x="Time", y = "Dissolved Oxygen"))
+
+favstats(hilomodified$Doper)
+```
+
+===================================================
+# Histograms MODIFIED 
+
+## River Flow MODIFIED
+```{r}
+hist(hilomodified$cms, main = "Histogram of River Flow", xlab = "River Flow", breaks =90, xlim = c(0,100))
+
+# this looks okay
+```
+## CHL MODIFIED
+```{r}
+# VERY skewed
+hist(hilomodified$ChlRFU, main = "Histogram of Chlorophyll", xlab = "Chlorophyll  - relative fluorescence units (RFU)")
+
+# this looks better
+hist(log(hilomodified$ChlRFU), main = "Histogram of Log Chlorophyll", xlab = "Chlorophyll")
+```
+## Turbitity MODIFIED
+```{r}
+# VERY skewed
+hist(hilomodified$Corr.NTU, main = "Histogram of Turbidity", xlab = "Turbidity - Nephelometric Turbidity Units (NTU)")
+
+# this looks better
+hist(log(hilomodified$Corr.NTU), main = "Histogram of Log Turbidity", xlab = "Turbidity")
+
+```
+## Salinity MODIFIED
+```{r}
+# skewed
+hist(hilomodified$saltppt, main = "Histogram of Salinity", xlab = "Salinity - unit parts per thousand (PPT)")
+
+```
+## Temperature MODIFIED
+```{r}
+# skewed
+hist(hilomodified$TempC, main = "Histogram of Temperature", xlab = "Temperature - C")
+
+```
+## Dissolved Oxygen MODIFIED
+```{r}
+# skewed
+hist(hilomodified$saltppt, main = "Histogram of Dissolved Oxygen", xlab = "Dissolved Oxygen")
+
+```
+=============================================================
+
+# Plot with ALL Var 2013-2015
+It is hard to see what is going on 
+```{r}
+AllYears <- ggplot(hilomodified,  aes(x = date, y = cms)) + 
+  geom_line()+
+  geom_line(aes(y =saltppt), color = "darkred") +
+  geom_line(aes(y = Corr.NTU), color="darkgreen") +
+  geom_line(aes(y=ChlRFU),color="blue")
+
+print(AllYears + ggtitle("Hilo Bay")+labs(x="Time", y = "River Flow - cubic meters per second"))
+
+```
+
+=========================================================
+
+# ATTEMPT 1: Separating the Data by Storm using SALT
+
+```{r}
+
+outcomes <- as.numeric(hilomodified$saltppt)<25 
+index.lt25 <- which(outcomes==TRUE)
+
+poss.storms <- hilomodified[index.lt25,]
+poss.storms
+```
+
+
+```{r}
+outcomes.35 <- as.numeric(hilomodified$saltppt)<35 
+index.lt35 <- which(outcomes==TRUE)
+index.lt25
+poss.storms35 <- hilomodified[index.lt25,]
+poss.storms35
+
+hilomodified$date[16]
+```
+
+```{r}
+storm.1.7.13 <- ggplot(hilomodified[145:168,],  aes(x = date, y = as.numeric(cms))) + 
+  geom_line(color="black")+
+  geom_line(aes(y = as.numeric(saltppt)), color = "lightsteelblue1") +
+  geom_line(aes(y = as.numeric(Corr.NTU)), color="grey69") +
+  geom_line(aes(y=as.numeric(ChlRFU)),color="khaki")
+
+print(storm.1.7.13 + ggtitle("Storm 1/7/13")+labs(x="Time"))
+```
+
+# ATTEMPT 2: Separating the Data by Storm using CHANGE IN RIVER FLOW
+
+```{r}
+# any value greater than or equal to 10 cms indicates a storm
+pos.neg <- as.numeric(hilomodified$cms) - 10 
+
+start <- vector()
+end <- vector()
+
+for(i in 1:length(pos.neg)){
+  if(isTRUE(pos.neg[i] < 0 && pos.neg[i+1] > 0)){ 
+    # if goes from + to - then this is the beginning of a storm
+    start[i] <- i
+  }else if(isTRUE(pos.neg[i] > 0 && pos.neg[i+1] < 0)){
+    # if goes from - to + then this is the end of the storm
+    end[i] <- i
+    }
+}
+start<-start[!is.na(start)] # removing NA
+start
+length(start) # make sure both start and end are the same length 
+
+end<-end[!is.na(end)]
+end
+length(end)
+```
+
+```{r}
+for(i in 1:length(start)){
+  # the point start[i] is the beginning of a storm
+  # the point end[i] is the end of the same storm
+  # we are adding 24 hours to each start and end time
+ p <- ggplot(hilomodified[(start[i]-24):(end[i]+24),],aes(x = date, y = as.numeric(cms))) +
+  geom_line(color="black")
+ p <- p + geom_line(aes(y = range01(as.numeric(Corr.NTU))), color="green") 
+ p <- p + geom_line(aes(y= range01(as.numeric(ChlRFU))),color="blue") 
+ p <- p + scale_y_continuous(name = "First Axis", sec.axis = sec_axis(trans = ~.*.05, name="Second Axis")
+  ) 
+  # geom_line(aes(y = range01(as.numeric(Corr.NTU))), color="green") +
+  # geom_line(aes(y= range01(as.numeric(ChlRFU))),color="blue") +
+  # geom_line(aes(y = range01(as.numeric(saltppt))),color="red") +
+  # geom_line(aes(y = range01(as.numeric(TempC))),color="purple") +
+  # geom_line(aes(y = range01(as.numeric(Doper))),color="orange")+
+   p <- p + ggtitle("Storms")+labs(x="Time")
+ print(p)
+}
+
+```
+
+```{r}
+range01 <- function(x, na.rm = TRUE) {
+  # version 1.1 (9 Aug 2013)
+  (x - min(x, na.rm = na.rm)) / (max(x, na.rm = na.rm) - min(x, na.rm = na.rm))
+}
+```
+
+# ATTEMP 3: Separating the Data by Storm RIVER FLOW > 10cms
+WE WILL USE THIS METHOD
+# using base R
+```{r,fig.height=20}
+#num <- c(1:length(start))
+#graphics.off()
+
+for(i in 1:length(start)){
+#for(i in c(1)){
+  
+#jpeg(sprintf("storm-%s.jpeg", num[i]),width=2000, height = 1000)
+  
+index <- c(start[i]:(end[i]+24))
+
+date <- c(hilomodified$date[index])
+enddate <- hilomodified$date[end[i]+24]-10
+endcms <- as.numeric(hilomodified$cms[end[i]+24])
+endchl <- as.numeric(hilomodified$ChlRFU[end[i]+24])
+endturb <- as.numeric(hilomodified$Corr.NTU[end[i]+24])
+endsalt <- as.numeric(hilomodified$saltppt[end[i]+24])
+endtemp <- as.numeric(hilomodified$TempC[end[i]+24])
+endDO <- as.numeric(hilomodified$Doper[end[i]+24])
+
+
+par(mfrow=c(6,1)) 
+# RIVER FLOW
+plot(x = date,y = as.numeric(hilomodified$cms[index]), type = "l",lwd=2, col="black", xlab="Time", ylab="River Flow cms", cex.lab = 1.5) # Create first plot for River Flow
+text(x= enddate, y = endcms, col = "black", adj=1, cex=3, label= "River Flow")
+
+# CHLOROPHYLL
+if(sum(is.na(as.numeric(hilomodified$ChlRFU[index])))==length(hilomodified$ChlRFU[index])){
+  plot(x = 0 ,y = 0, type = "l",lwd=2, col="blue", xlab= "Time", ylab = "Chlorophyll  - relative fluorescence units (RFU)", cex.lab = 1.5)
+text(x = 0, y = 0, col = "blue", adj=1, cex=3, label= "Chlorophyll")
+}else{
+plot(x = date ,y = as.numeric(hilomodified$ChlRFU[index]), type = "l",lwd=2, col="blue", xlab= "Time", ylab = "Chlorophyll  - relative fluorescence units (RFU)", cex.lab = 1.5)
+text(x = enddate, y = endchl, col = "blue", adj=1, cex=3, label= "Chlorophyll")
+}
+
+# TURBIDITY
+if(sum(is.na(as.numeric(hilomodified$Corr.NTU[index])))==length(hilomodified$Corr.NTU[index])){
+  plot(x = 0 ,y = 0, type = "l",lwd=2, col="red", xlab= "Time", ylab = "Turbidity - Nephelometric Turbidity Units (NTU)", cex.lab = 1.5)
+text(x = 0, y = 0, col = "red", adj=1, cex=3, label= "Turbidity")
+}else{
+plot(x = date ,y = as.numeric(hilomodified$Corr.NTU[index]), type = "l",lwd=2, col="red", xlab= "Time", ylab = "Turbidity - Nephelometric Turbidity Units (NTU)", cex.lab = 1.5)
+text(x = enddate, y = endturb, col = "red", adj=1, cex=3, label= "Turbidity")
+}
+
+# SALINITY
+if(sum(is.na(as.numeric(hilomodified$saltppt[index])))==length(hilomodified$saltppt[index])){
+  plot(x = 0 ,y = 0, type = "l",lwd=2, col="green", xlab= "Time", ylab = "Salinity - unit parts per thousand (PPT)", cex.lab = 1.5)
+text(x = 0, y = 0, col = "green", adj=1, cex=3, label= "Salinity")
+}else{
+plot(x = date ,y = as.numeric(hilomodified$saltppt[index]), type = "l",lwd=2, col="green", xlab= "Time", ylab = "Salinity - unit parts per thousand (PPT)", cex.lab = 1.5)
+text(x = enddate, y = endsalt, col = "green", adj=1, cex=3, label= "Salinity")
+}
+
+# TEMPERATURE
+if(sum(is.na(as.numeric(hilomodified$TempC[index])))==length(hilomodified$TempC[index])){
+  plot(x = 0 ,y = 0, type = "l",lwd=2, col="orange", xlab= "Time", ylab = "Temperature - Celsius", cex.lab = 1.5)
+text(x = 0, y = 0, col = "orange", adj=1, cex=3, label= "Temperature")
+}else{
+plot(x = date ,y = as.numeric(hilomodified$TempC[index]), type = "l",lwd=2, col="orange", xlab= "Time", ylab = "Temperature - Celsius", cex.lab = 1.5)
+text(x = enddate, y = endtemp, col = "orange", adj=1, cex=3, label= "Temperature")
+}
+
+# DISSOLVED OXYGEN
+if(sum(is.na(as.numeric(hilomodified$Doper[index])))==length(hilomodified$Doper[index])){
+  plot(x = 0 ,y = 0, type = "l",lwd=2, col="purple", xlab= "Time", ylab = "Dissolved Oxygen in percent of saturation", cex.lab = 1.5)
+text(x = 0, y = 0, col = "purple", adj=1, cex=3, label= "Dissolved Oxygen")
+}else{
+plot(x = date ,y = as.numeric(hilomodified$Doper[index]), type = "l",lwd=2, col="purple", xlab= "Time", ylab = "Dissolved Oxygen in percent of saturation", cex.lab = 1.5)
+text(x = enddate, y = endDO, col = "purple", adj=1, cex=3, label= "Dissolved Oxygen")
+}
+
+#dev.off()
+}
+
+```
+ 
+
+
+
+# ============================= Dickey Fuller Test ===============================
+
+```{r}
+library(tseries)
+adf.test(hilo2015.fixed$cms, alternative= "stationary")
+adf.test(hilo2015.fixed$ChlRFU, alternative= "stationary")
+adf.test(hilo2015.fixed$Doper, alternative= "stationary")
+adf.test(hilo2015.fixed$saltppt, alternative= "stationary")
+adf.test(hilo2015.fixed$TempC, alternative= "stationary")
+adf.test(hilo2015.fixed$Corr.NTU, alternative= "stationary")
+```
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
